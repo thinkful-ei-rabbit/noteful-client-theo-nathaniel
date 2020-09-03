@@ -9,11 +9,13 @@ class AddNote extends React.Component{
     handleNoteAdd=(event)=>{
         event.preventDefault()
         // const newDate= newDate().toISOString()
+
+
         const newNote= {
                name: this.noteInput.current.value,
             //    modified: newDate,
                content: this.messageInput.current.value,
-            //    folderId: 555 555
+               folderId: this.optionSelect.current.value ,
             }
 
         console.log(newNote)
@@ -50,13 +52,24 @@ class AddNote extends React.Component{
         super(props);
         this.noteInput=React.createRef()
         this.messageInput=React.createRef()
+        this.optionSelect=React.createRef()
     }
 
     render(){
+        const newNoteFolder = this.context.folders.map(el => {
+            return(
+                <option value= {el.id}> {el.name}</option>
+        )
+    })
+        
         return(
         <div className='add-note-container'>
             <form className='add-note-form' onSubmit={e => this.handleNoteAdd(e)}>
                 <h2 className='add-note-title' style={{color: 'wheat'}}>Note Name</h2>
+                <label htmlFor='folder-dropdown-select'></label>
+                <select ref={this.optionSelect}>
+                    {newNoteFolder}
+                </select>  
                 <label htmlFor='add-note-name'></label>
                 <input type='text' id='add-note-name' ref={this.noteInput}  placeholder='Input note name here!' required></input>
                 <label htmlFor='add-note-submit' ></label>

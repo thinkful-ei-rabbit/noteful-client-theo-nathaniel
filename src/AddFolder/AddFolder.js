@@ -8,6 +8,15 @@ class AddFolder extends React.Component {
     }
     static contextType = ApiContext;
 
+    validateFolder=(folder)=>{
+        let newFolder= this.folderInput.current.value.trim()
+        if(newFolder.length === 0){
+            return alert("Gotta name the folder!")
+            
+        }
+    }
+
+
     handleFolderAdd(event){
         event.preventDefault();
         const newFolder = {name: this.folderInput.current.value};
@@ -38,6 +47,7 @@ class AddFolder extends React.Component {
         .catch(error=>{
             console.error("nice try!",{error})
         })
+ 
     }
     constructor(props){
         super(props);

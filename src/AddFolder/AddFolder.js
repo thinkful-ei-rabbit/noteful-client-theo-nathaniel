@@ -8,12 +8,11 @@ class AddFolder extends React.Component {
     }
     static contextType = ApiContext;
 
-    validateFolder=(folder)=>{
+    validateFolder=()=>{
         let newFolder= this.folderInput.current.value.trim()
         if(newFolder.length === 0){
-            return alert("Gotta name the folder!")
-            
-        }
+            throw new Error("Gotta name the folder!");
+            }
     }
 
 
@@ -22,9 +21,10 @@ class AddFolder extends React.Component {
         const newFolder = {name: this.folderInput.current.value};
         console.log("newFolder",newFolder);
 
-        //fetch post newFolder and check if api auto generates Id, if not add own id
-
-        fetch(`${config.API_ENDPOINT}/folders`,
+        // fetch post newFolder and check if api auto generates Id, if not add own id
+        try {
+            this.validateFolder();
+            fetch(`${config.API_ENDPOINT}/folders`,
         {
 
         method:'POST',
@@ -40,13 +40,17 @@ class AddFolder extends React.Component {
         })
         .then(data => {
             this.folderInput.current.value=''
-            // this.props.AddFolder(newFolder)
+            this.context.addFolder(data);
         
         })
 
         .catch(error=>{
             console.error("nice try!",{error})
         })
+
+            } catch(e) {
+                return alert(e);
+            }
  
     }
     constructor(props){

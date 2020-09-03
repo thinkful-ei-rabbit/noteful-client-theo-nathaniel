@@ -6,9 +6,18 @@ class AddNote extends React.Component{
     static defaultProps = {AddNote: () => {}}
     static contextType = ApiContext
 
+    validateNote=()=>{
+        let newNoteName= this.noteInput.current.value.trim()
+        if(newNoteName.length === 0){
+            throw new Error("Gotta name the note!");
+            }
+    }
+
     handleNoteAdd=(event)=>{
         event.preventDefault()
         // const newDate= newDate().toISOString()
+
+        
 
 
         const newNote= {
@@ -19,32 +28,42 @@ class AddNote extends React.Component{
             }
 
         console.log(newNote)
+
+        try {
+            this.validateNote();
+            fetch(`${config.API_ENDPOINT}/notes`, {
+
+                method:'POST',
+                body: JSON.stringify(newNote),
+                headers:{'content-type': 'application/json'},
+                
+                })
+            .then(res=> {
+                if(!res.ok){
+                    return res.json().then(error=> {
+                        throw error
+                    })
+            }
+            return res.json()
+         } )
+    
+            .then(data => {
+                this.noteInput.current.value= ''
+        
+                this.messageInput.current.value= ''
+    
+                this.context.addNote(data);
+    
+            })
+    
+            .catch(error => {console.error('nice try!', {error})})
+
+        } catch (e) {
+            return alert(e);
+        }
         
 
-        fetch(`${config.API_ENDPOINT}/notes`, {
-
-            method:'POST',
-            body: JSON.stringify(newNote),
-            headers:{'content-type': 'application/json'},
-            
-            })
-        .then(res=> {
-            if(!res.ok){
-                return res.json().then(error=> {
-                    throw error
-                })
-        }
-        return res.json()
-     } )
-
-        .then(data => {
-            this.noteInput.current.value= ''
-    
-            this.messageInput.current.value= ''
-
-        })
-
-        .catch(error => {console.error('nice try!', {error})})
+        
 
 
     }
@@ -71,7 +90,7 @@ class AddNote extends React.Component{
                     {newNoteFolder}
                 </select>  
                 <label htmlFor='add-note-name'></label>
-                <input type='text' id='add-note-name' ref={this.noteInput}  placeholder='Input note name here!' required></input>
+                <input type='text' id='add-note-name' ref={this.noteInput}  placeholder='Input note name here!'></input>
                 <label htmlFor='add-note-submit' ></label>
                
                 <br/>

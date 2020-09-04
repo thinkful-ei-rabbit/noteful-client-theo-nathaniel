@@ -22,7 +22,7 @@ class AddNote extends React.Component{
 
         const newNote= {
                name: this.noteInput.current.value,
-            //    modified: newDate,
+               modified: new Date(),
                content: this.messageInput.current.value,
                folderId: this.optionSelect.current.value ,
             }
@@ -77,7 +77,7 @@ class AddNote extends React.Component{
     render(){
         const newNoteFolder = this.context.folders.map(el => {
             return(
-                <option value= {el.id}> {el.name}</option>
+                <option value= {el.id} key={el.id}> {el.name} </option>
         )
     })
         

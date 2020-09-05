@@ -40,5 +40,6 @@ export default class NotePageNav extends React.Component {
         )}
       </div>
     )
+    
   }
 }

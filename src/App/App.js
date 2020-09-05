@@ -15,7 +15,8 @@ import NotefulError from '../NotefulError'
 class App extends Component {
     state = {
         notes: [],
-        folders: []
+        folders: [],
+        message: false,
     };
 
     componentDidMount() {
@@ -97,6 +98,7 @@ class App extends Component {
         const value = {
             notes: this.state.notes,
             folders: this.state.folders,
+            message: this.state.message,
             deleteNote: this.handleDeleteNote,
             addFolder: this.handleAddFolder,
             addNote: this.handleAddNote

@@ -1,21 +1,23 @@
-import React, { Component } from 'react';
-import { Route, Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import React, {Component} from 'react';
+import {Route, Link} from 'react-router-dom';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import NoteListNav from '../NoteListNav/NoteListNav';
 import NotePageNav from '../NotePageNav/NotePageNav';
 import NoteListMain from '../NoteListMain/NoteListMain';
 import NotePageMain from '../NotePageMain/NotePageMain';
 import ApiContext from '../ApiContext';
 import config from '../config';
-import './App.css';
-import AddFolder from '../AddFolder/AddFolder';
-import AddNote from '../AddNote/AddNote'
+import AddFolder from '../AddFolder'
+import AddNote from '../AddNote'
 import NotefulError from '../NotefulError'
+import './App.css';
 
 class App extends Component {
     state = {
         notes: [],
-        folders: []
+        folders: [],
+        //folderName:''
     };
 
     componentDidMount() {
@@ -32,10 +34,10 @@ class App extends Component {
                 return Promise.all([notesRes.json(), foldersRes.json()]);
             })
             .then(([notes, folders]) => {
-                this.setState({ notes, folders });
+                this.setState({notes, folders});
             })
             .catch(error => {
-                console.error({ error });
+                console.error({error});
             });
     }
 
@@ -56,6 +58,8 @@ class App extends Component {
             notes: [...this.state.notes, note]
         })
     }
+
+   
 
     renderNavRoutes() {
         return (
@@ -87,8 +91,6 @@ class App extends Component {
                     />
                 ))}
                 <Route path="/note/:noteId" component={NotePageMain} />
-                <Route path="/add-folder" component={AddFolder} />
-                <Route path="/add-note" component={AddNote} />
             </>
         );
     }
@@ -97,18 +99,18 @@ class App extends Component {
         const value = {
             notes: this.state.notes,
             folders: this.state.folders,
+            newFolder: this.state.newFolder,
             deleteNote: this.handleDeleteNote,
             addFolder: this.handleAddFolder,
-            addNote: this.handleAddNote
+            addNoteToState: this.handleAddNote
+            
+
         };
         return (
-            <ApiContext.Provider value={value}>
+           <NotefulError>
+           <ApiContext.Provider value={value}>
                 <div className="App">
-                    <nav className="App__nav">
-                        <NotefulError>
-                            {this.renderNavRoutes()}
-                        </NotefulError>
-                    </nav>
+                    <nav className="App__nav">{this.renderNavRoutes()}</nav>
                     <header className="App__header">
                         <h1>
                             <Link to="/">Noteful</Link>{' '}
@@ -116,12 +118,12 @@ class App extends Component {
                         </h1>
                     </header>
                     <main className="App__main">
-                        <NotefulError>
-                            {this.renderMainRoutes()}
-                        </NotefulError>
-                    </main>
+                    <Route path='/add-folder' component={AddFolder}/>
+                    <Route path='/add-note' component={AddNote}/>
+                        {this.renderMainRoutes()}</main>
                 </div>
             </ApiContext.Provider>
+            </NotefulError>
         );
     }
 }

@@ -1,106 +1,112 @@
 import React from 'react'
-import ApiContext from '../ApiContext'
-import config from '../config'
-
-class AddNote extends React.Component{
-    static defaultProps = {AddNote: () => {}}
-    static contextType = ApiContext
-
-    validateNote=()=>{
-        let newNoteName= this.noteInput.current.value.trim()
-        if(newNoteName.length === 0){
-            throw new Error("Gotta name the note!");
-            }
-    }
-
-    handleNoteAdd=(event)=>{
-        event.preventDefault()
-        // const newDate= newDate().toISOString()
-
-        
+import ApiContext from './ApiContext'
+import config from './config'
 
 
-        const newNote= {
-               name: this.noteInput.current.value,
-               modified: new Date(),
-               content: this.messageInput.current.value,
-               folderId: this.optionSelect.current.value ,
-            }
+class AddNote extends React.Component {
+  state = { 
+    name:'',
+    folderId:'',
+    content:'',
+    modified:''
+   }
 
-        console.log(newNote)
+  static contextType = ApiContext;
 
-        try {
-            this.validateNote();
-            fetch(`${config.API_ENDPOINT}/notes`, {
-
-                method:'POST',
-                body: JSON.stringify(newNote),
-                headers:{'content-type': 'application/json'},
-                
-                })
-            .then(res=> {
-                if(!res.ok){
-                    return res.json().then(error=> {
-                        throw error
-                    })
-            }
-            return res.json()
-         } )
-    
-            .then(data => {
-                this.noteInput.current.value= ''
-        
-                this.messageInput.current.value= ''
-    
-                this.context.addNote(data);
-    
-            })
-    
-            .catch(error => {console.error('nice try!', {error})})
-
-        } catch (e) {
-            return alert(e);
-        }
-        
-
-        
-
-
-    }
-    constructor(props){
-        super(props);
-        this.noteInput=React.createRef()
-        this.messageInput=React.createRef()
-        this.optionSelect=React.createRef()
-    }
-
-    render(){
-        const newNoteFolder = this.context.folders.map(el => {
-            return(
-                <option value= {el.id} key={el.id}> {el.name} </option>
-        )
+  generateFolderList = () => {
+    const folderList = this.context.folders.map(item => {
+      return <option key={item.id} value={item.id}>{item.name}</option>
     })
-        
-        return(
-        <div className='add-note-container'>
-            <form className='add-note-form' onSubmit={e => this.handleNoteAdd(e)}>
-                <h2 className='add-note-title' style={{color: 'wheat'}}>Note Name</h2>
-                <label htmlFor='folder-dropdown-select'></label>
-                <select ref={this.optionSelect}>
-                    {newNoteFolder}
-                </select>  
-                <label htmlFor='add-note-name'></label>
-                <input type='text' id='add-note-name' ref={this.noteInput}  placeholder='Input note name here!'></input>
-                <label htmlFor='add-note-submit' ></label>
-               
-                <br/>
-                <input type = 'message' id="add-note-message" ref={this.messageInput} style={{height: '100px', width: '350px'}} placeholder ='Input note description here!'></input>
-                <br/>
-                <button type='submit' id='add-note-submit'>Submit</button>
-            </form>
-        </div>
-        )
-    }
-}
+    return folderList
+  }
 
-export default AddNote
+  handleClickAddNote = (name, description, folder) => {
+   let newDate = new Date().toISOString()
+    let newItem = JSON.stringify({
+      name: name,
+      folderId: folder || document.getElementById('add-folder').value,
+      content: description,
+      modified: newDate
+    })
+    let error;
+
+    if(name.length >= 3 && description.length >= 3){
+    fetch(`${config.API_ENDPOINT}/notes`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: newItem
+    })
+    .then(res => {
+      if (!res.ok){
+        error = { code: res.status };
+      }
+      return res.json();
+    })
+    .then(note => {
+      if (error) {
+        error.message = note.message;
+        return Promise.reject(error);
+      }
+      this.context.addNoteToState(note)
+      this.props.history.push(`/`)
+    })
+    .catch(error => {
+      console.error({error});
+    });
+  } else {
+    alert('Please use at least 3 characters for name and description')
+  }
+    
+  }
+
+  getName = (name) => {
+    this.setState({
+      name:name
+    })
+
+  }
+
+  getFolder = (folder) => {
+    this.setState({
+      folderId: folder
+    })
+
+  }
+  getContent = (content) => {
+    this.setState({
+      content: content
+    })
+
+  }
+
+
+
+
+  render() { 
+    
+
+    return (
+
+      <form>
+        <label htmlFor="add-folder">Add Folder</label>
+        <select id="add-folder"
+        onChange={(e) => this.getFolder(e.target.value)}
+        >{this.generateFolderList()}</select>
+        <label htmlFor="note-name">Note Name</label>
+        <input 
+          id="note-name"
+          onChange={(e) => this.getName(e.target.value)}
+        >
+        </input>
+        <label htmlFor="add-description">Add Description</label>
+        <textarea name="add-description" id="add-description" cols="30" rows="10"
+        onChange={(e) => this.getContent(e.target.value)}
+        ></textarea>
+        <button type="button" onClick={()=> this.handleClickAddNote(this.state.name, this.state.content, this.state.folderId)}>Add Note</button>
+      </form>
+
+      );
+  }
+}
+ 
+export default AddNote;

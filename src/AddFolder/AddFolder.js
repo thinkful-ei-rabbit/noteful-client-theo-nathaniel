@@ -1,74 +1,99 @@
-import React from 'react';
-import ApiContext from '../ApiContext'
-import config from '../config'
+import React from 'react'
+import config from './config'
+import ApiContext from './ApiContext'
+import './add.css'
 
 class AddFolder extends React.Component {
-    static defaultProps ={ 
-        addFolder: () => {} 
+  
+  constructor(props) {
+    super(props);
+    this.state ={
+      name:''
     }
-    static contextType = ApiContext;
-
-    validateFolder=()=>{
-        let newFolder= this.folderInput.current.value.trim()
-        if(newFolder.length === 0){
-            throw new Error("Gotta name the folder!");
-            }
-    }
+  }
 
 
-    handleFolderAdd(event){
-        event.preventDefault();
-        const newFolder = {name: this.folderInput.current.value};
-        console.log("newFolder",newFolder);
 
-        // fetch post newFolder and check if api auto generates Id, if not add own id
-        try {
-            this.validateFolder();
-            fetch(`${config.API_ENDPOINT}/folders`,
-        {
 
-        method:'POST',
-        body: JSON.stringify(newFolder),
-        headers:{'content-type': 'application/json'},
-        
-        })
-        .then(res=>{
-            if(!res.ok)
-                return res.json().then(e => Promise.reject(e));
-        
-        return res.json()
-        })
-        .then(data => {
-            this.folderInput.current.value=''
-            this.context.addFolder(data);
-        
-        })
 
-        .catch(error=>{
-            console.error("nice try!",{error})
-        })
+  static contextType = ApiContext
+  
 
-            } catch(e) {
-                return alert(e);
-            }
- 
-    }
-    constructor(props){
-        super(props);
-        this.folderInput = React.createRef();
-    }
-    render(){
-        return <div className='add-folder-container'>
-            <form className='add-folder-form' onSubmit={e => this.handleFolderAdd(e)}>
-                <h2 className='add-folder-title' style={{color: 'wheat'}}>Folder Name</h2>
-                <label htmlFor='add-folder-name'></label>
-                <input type='text' id='add-folder-name' ref={this.folderInput} placeholder='Input folder name here.'></input>
-                <label htmlFor='add-folder-submit'></label>
-                <button type='submit' id='add-folder-submit'>Submit</button>
-            </form>
-        </div>
-    }
+  handleClickAddFolder = (name) => {
+    let newItem = JSON.stringify({
+      name: name,
+    })
+    let error;
+
+    if(name.length >= 3 && typeof name === typeof ''){
+    fetch(`${config.API_ENDPOINT}/folders`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: newItem
+    }).then(res => {
+      if (!res.ok){
+        error = { code: res.status };
+      }
+      return res.json();
+    })
+    .then(folder => {
+      if (error) {
+        error.message = folder.message;
+        return Promise.reject(error);
+      }
+      this.context.addFolder(folder)
+      this.props.history.push(`/`)
+    })
+    .catch(error => {
+      console.error({error});
+    });
+  } else {
+    alert('please use more than 3 characters for name')
+  }
+    
+  }
+  getValue = (val) => {
+    this.setState({
+      name:val
+    })
+  }
+
+
+
+  render() {
+    //console.log(this.handleClickAddFolder('hi'))
+    console.log(this.state.name)
+    return (
+      <div>
+
+        <form>
+          <label
+            htmlFor='new-folder'
+          >New Folder Name:</label>
+          <input
+            id='new-Folder'
+            defaultValue='Hello'
+            onChange={(e) => this.getValue(e.target.value)}
+          >
+
+          </input>
+          <button
+            className='Add Folder'
+            type='button'
+            onClick={(e) => this.handleClickAddFolder(`${this.state.name}`)}
+          >
+            Add New Folder!
+      </button>
+        </form>
+
+      </div>
+    )
+  }
+
 
 }
 
-export default AddFolder;
+
+
+
+export default AddFolder

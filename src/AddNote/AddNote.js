@@ -1,6 +1,7 @@
 import React from 'react'
-import ApiContext from './ApiContext'
-import config from './config'
+import ApiContext from '../ApiContext'
+import config from '../config'
+import '../index.css';
 
 
 class AddNote extends React.Component {
@@ -87,7 +88,7 @@ class AddNote extends React.Component {
 
     return (
 
-      <form>
+      <form className="AddNoteForm">
         <label htmlFor="add-folder">Add Folder</label>
         <select id="add-folder"
         onChange={(e) => this.getFolder(e.target.value)}

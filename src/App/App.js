@@ -8,8 +8,8 @@ import NoteListMain from '../NoteListMain/NoteListMain';
 import NotePageMain from '../NotePageMain/NotePageMain';
 import ApiContext from '../ApiContext';
 import config from '../config';
-import AddFolder from '../AddFolder'
-import AddNote from '../AddNote'
+import AddFolder from '../AddFolder/AddFolder'
+import AddNote from '../AddNote/AddNote'
 import NotefulError from '../NotefulError'
 import './App.css';
 

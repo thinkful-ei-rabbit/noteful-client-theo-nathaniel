@@ -21,10 +21,10 @@ class AddNote extends React.Component{
 
 
         const newNote= {
-               name: this.noteInput.current.value,
-               modified: new Date(),
+               title: this.noteInput.current.value,
+               date_created: new Date(),
                content: this.messageInput.current.value,
-               folderId: this.optionSelect.current.value ,
+               folder: this.optionSelect.current.value ,
             }
 
         console.log(newNote)
@@ -77,7 +77,7 @@ class AddNote extends React.Component{
     render(){
         const newNoteFolder = this.context.folders.map(el => {
             return(
-                <option value= {el.id} key={el.id}> {el.name} </option>
+                <option value= {el.id} key={el.id}> {el.folder_name} </option>
         )
     })
         

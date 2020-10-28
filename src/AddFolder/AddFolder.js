@@ -18,7 +18,7 @@ class AddFolder extends React.Component {
 
     handleFolderAdd(event){
         event.preventDefault();
-        const newFolder = {name: this.folderInput.current.value};
+        const newFolder = {folder_name: this.folderInput.current.value};
         console.log("newFolder",newFolder);
 
         // fetch post newFolder and check if api auto generates Id, if not add own id

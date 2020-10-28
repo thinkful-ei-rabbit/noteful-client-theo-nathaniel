@@ -19,7 +19,6 @@ export default class NotePageMain extends React.Component {
   render() {
     const { notes=[] } = this.context
     const { noteId } = this.props.match.params
-    console.log(this.props.match.params);
     const note = findNote(notes, noteId) 
     if (note === undefined){
       throw Error('The note id entered does not exist')
@@ -28,8 +27,8 @@ export default class NotePageMain extends React.Component {
         <section className='NotePageMain'>
           <Note
             id={note.id}
-            name={note.name}
-            modified={note.modified}
+            title={note.title}
+            modified={note.date_created}
             onDeleteNote={this.handleDeleteNote}
           />
           <div className='NotePageMain__content'>
